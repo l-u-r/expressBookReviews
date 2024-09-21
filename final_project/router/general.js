@@ -6,22 +6,25 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  const user = req.body.username;
-  const psw = req.body.password;
-  if (user && psw) {
-    if (!doesExist(user)) { 
-      users.push({"username":user,"password":psw});
-      return res.status(200).json({message: "Account created successfully."});
+    const username = req.body.username;
+    const password = req.body.password;
+    let existingusername = users.filter((user) => {
+        return user.username === username
+    });
+    if(existingusername.length > 0){
+        return res.status(404).json({message: "Username already exists."});
     } else {
-      return res.status(404).json({message: "User already exists."});
+        if (username && password) {
+            users.push({"username":username,"password":password});
+            return res.status(200).json({message: "Account created with success."});
+        }
     }
-  } 
-  return res.status(404).json({message: "Unable to register."});
+    return res.status(404).json({message: "Unable to register."});
 });
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books,null,4));
+    res.send(JSON.stringify(books,null,4));
 });
 
 // Get book details based on ISBN
